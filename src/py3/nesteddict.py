@@ -38,7 +38,7 @@ def _has_dict_protocol(obj):
 
 
 class InvalidAssignmentError(Exception):
-    _MSG = "Not possible to assign a key"
+    __str__ = lambda self: "Not possible to assign a key"
 
 
 class NestedDict(odict):
@@ -60,8 +60,8 @@ class NestedDict(odict):
         except KeyError:
             # Okay, there is no key. Need to do it hard way.
             if self.__depth == None:
-                # Undefined depth means that depth is infinite, thus
-                # and new nested dict after another.
+                # Undefined depth means that depth is infinite, thus we
+                # keep spawning new dictionaries forever.
                 next_level = NestedDict()
             elif self.__depth > 1:
                 next_level = NestedDict(depth=self.__depth-1, 
@@ -75,6 +75,8 @@ class NestedDict(odict):
     def __build_sequence(self, node, key):
         leaf = self
         part = key
+        
+        # This allows us to use any iterable as a key to nested dict.
         if _is_container(key):
             assert not self.__depth or len(key) <= self.__depth
                         
@@ -103,6 +105,12 @@ class NestedDict(odict):
         for key in super().__iter__():
             next_level = super().__getitem__(key)
             if isinstance(next_level, NestedDict):
+                # Need to yield key when next level dictionary is empty.
+                if not len(next_level):
+                    yield key,
+                
+                # if there is more sub-items, create a one tuple key
+                # out of it. That way the keys are more handy to use.
                 for next_key in next_level:
                     yield tuple((key, )) + next_key
             else:
@@ -155,8 +163,8 @@ class NestedDict(odict):
             return "NestedDict()"
         
         args = []
-        for key, value in self.items():
-            args.append("(%s, %s)" % (key, repr(value)))
+        for key in self:
+            args.append("(%s, %s)" % (key, repr(self[key])))
         
         return "NestedDict([%s])" % ", ".join(args)
         

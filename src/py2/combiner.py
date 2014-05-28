@@ -16,6 +16,7 @@
    limitations under the License.
 '''
 
+
 def combine_class(*traits, **resolved_conflicts):
     pass
 

@@ -1,4 +1,4 @@
-#!/usr/bin/python -tt
+    #!/usr/bin/python -tt
 # -*- coding: utf-8 -*-
 '''
    Copyright 2014 Teppo Perä

@@ -16,8 +16,14 @@
    limitations under the License.
 '''
 
-def add_traits(target_object, *traits, **resolved_conflicts):
-    pass
-
-if __name__ == '__main__':
-    pass
+# Executable code that converts all the variables ending with 'Error'
+# into a exception class.
+create_exception_classes = """
+for exception, message in dict(globals()).iteritems():
+    if not exception.endswith('Error'):
+        continue
+    bases = (Exception,)
+    attrs =  {'_MSG': message,
+              '__str__': lambda self: self._MSG}
+    globals()[exception] = type(exception, bases, attrs)
+"""
