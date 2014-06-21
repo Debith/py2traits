@@ -19,8 +19,7 @@
 import inspect
 from trait_contexts import (NullContext,
                             ClassContext,
-                            StaticFunctionContext,
-                            ClassFunctionContext,
+                            DecoratedFunctionContext,
                             FunctionContext,
                             BoundMethodContext,
                             UnboundMethodContext,
@@ -69,11 +68,11 @@ class TraitSource(object):
                 if mode == 'self':
                     return FunctionContext(obj)
                 elif mode == 'cls':
-                    return ClassFunctionContext(classmethod(obj))
+                    return DecoratedFunctionContext(classmethod(obj))
                 else:
-                    return StaticFunctionContext(staticmethod(obj))
+                    return DecoratedFunctionContext(staticmethod(obj))
             except IndexError:
-                return StaticFunctionContext(staticmethod(obj))
+                return DecoratedFunctionContext(staticmethod(obj))
         elif isinstance(obj, property):
             return NullContext('Properties are not supported yet directly! Use class instead!')
         elif not isinstance(obj, type):

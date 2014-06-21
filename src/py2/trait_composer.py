@@ -73,6 +73,8 @@ class TraitComposer:
 
         # Compose traits into target object
         for trait in Traits(traits):
+            if not trait:
+                continue
             self._bind_objects(target_object, trait)
 
 

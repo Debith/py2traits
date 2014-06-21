@@ -17,42 +17,64 @@
 '''
 
 import inspect
-import binders
 
 
-class NullContext(object):
+class TraitContext(object):
+    """
+    Common interface for trait contexes
+    """
+    def __str__(self):
+        return self.BINDER_ID
+    
+    def __nonzero__(self):
+        return self.VALID
+    
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def as_trait(self):
+        return self._source
+    
+    @property
+    def as_target(self):
+        return self._target
+
+
+class NullContext(TraitContext):
     """
     Null context for invalid cases.
     """
+    BINDER_ID = 'null'
+    VALID = False
+    
     def __init__(self, extra_message):
+        print "PyTraits: NullContext:", extra_message
         self._extra_message = extra_message
-
-    def __str__(self):
-        return "null"
 
     @property
     def error_message(self):
         return self._extra_message
 
-    def __nonzero__(self):
-        return False
 
-
-class ClassContext(object):
+class ClassContext(TraitContext):
     """
     Class context for class objects.
 
     This class encapsulates behavior for handling classes as trait source
     and target.
     """
+    BINDER_ID = 'class'
+    VALID = True
+ 
     def __init__(self, clazz):
-        self._class = clazz
-
-    def __str__(self):
-        return "class"
+        self._source = clazz
+        self._target = clazz
+        self._name = clazz.__name__
 
     def __iter__(self):
-        for name, obj in vars(self._class).items():
+        for name, obj in vars(self._source).items():
             if isinstance(obj, staticmethod):
                 yield StaticFunctionContext(obj)
             elif isinstance(obj, classmethod):
@@ -62,192 +84,73 @@ class ClassContext(object):
             elif inspect.ismethoddescriptor(obj):
                 yield UnboundMethodContext(obj)
             else:
-                obj_via_getattr = getattr(self._class, name)
+                obj_via_getattr = getattr(self._source, name)
                 if (inspect.isfunction(obj_via_getattr) or
                     inspect.ismethoddescriptor(obj_via_getattr)):
                     yield UnboundMethodContext(obj)
 
-    @property
-    def name(self):
-        return self._class.__name__
 
-    @property
-    def as_target(self):
-        return self._class
-
-    def __nonzero__(self):
-        return True
-
-
-class InstanceContext(object):
+class InstanceContext(TraitContext):
     """
     Class context for class objects.
 
     This class encapsulates behavior for handling classes as trait source
     and target.
     """
-    def __init__(self, clazz):
-        self._class = clazz
-
-    def __str__(self):
-        return "instance"
-
-    def __iter__(self):
-        for name, obj in vars(self._class).items():
-            if isinstance(obj, staticmethod):
-                yield FunctionContext(obj)
-            elif isinstance(obj, classmethod):
-                yield FunctionContext(obj)
-            elif isinstance(obj, property):
-                yield PropertyContext(obj, name)
-            elif inspect.ismethoddescriptor(obj):
-                yield BoundMethodContext(obj)
-            else:
-                obj_via_getattr = getattr(self._class, name)
-                if (inspect.isfunction(obj_via_getattr) or
-                    inspect.ismethoddescriptor(obj_via_getattr)):
-                    yield BoundMethodContext(obj)
-
-    @property
-    def name(self):
-        return self._class.__name__
-
-    @property
-    def as_target(self):
-        return self._class
-
-    def __nonzero__(self):
-        return True
+    BINDER_ID = 'instance'
+    VALID = True
+    
+    def __init__(self, instance):
+        self._source = instance
+        self._target = instance
+        self._name = instance.__class__.__name__
 
 
-class BoundMethodContext(object):
-    def __init__(self, method):
-        self._method = method
-
-    def __str__(self):
-        return "bound method"
-
-    @property
-    def name(self):
-        return self._method.__name__
-
-    @property
-    def as_trait(self):
-        return self._method
-
-    @property
-    def as_target(self):
-        raise NotImplementedError("Cannot be a trait target!")
+class BoundMethodContext(TraitContext):
+    BINDER_ID = 'bound method'
+    VALID = True
+    
+    def __init__(self, bound_method):
+        self._source = bound_method
+        self._target = None
+        self._name = bound_method.__name__
 
 
-class UnboundMethodContext(object):
-    def __init__(self, method):
-        self._method = method
+class UnboundMethodContext(TraitContext):
+    BINDER_ID = 'unbound method'
+    VALID = True
+    
+    def __init__(self, unbound_method):
+        self._source = unbound_method
+        self._target = None
+        self._name = unbound_method.__name__
+        
 
-    def __str__(self):
-        return "unbound method"
-
-    @property
-    def name(self):
-        return self._method.__name__
-
-    @property
-    def as_trait(self):
-        return self._method
-
-    @property
-    def as_target(self):
-        raise NotImplementedError("Cannot be a trait target!")
-
-
-class StaticFunctionContext(object):
+class DecoratedFunctionContext(TraitContext):
+    BINDER_ID = 'function'
+    VALID = True
+    
     def __init__(self, function):
-        self._function = function
-
-    def __str__(self):
-        return "function"
-
-    def __nonzero__(self):
-        return True
-
-    @property
-    def name(self):
-        return self._function.__func__.__name__
-
-    @property
-    def as_trait(self):
-        return self._function
-
-    @property
-    def as_target(self):
-        raise NotImplementedError("Cannot be a trait target!")
+        self._source = function
+        self._target = None
+        self._name = function.__func__.__name__
 
 
-class ClassFunctionContext(object):
+class FunctionContext(TraitContext):
+    BINDER_ID = 'function'
+    VALID = True
+    
     def __init__(self, function):
-        self._function = function
-
-    def __str__(self):
-        return "function"
-
-    def __nonzero__(self):
-        return True
-
-    @property
-    def name(self):
-        return self._function.__func__.__name__
-
-    @property
-    def as_trait(self):
-        return self._function
-
-    @property
-    def as_target(self):
-        raise NotImplementedError("Cannot be a trait target!")
+        self._source = function
+        self._target = None
+        self._name = function.__name__
 
 
-class FunctionContext(object):
-    def __init__(self, function):
-        self._function = function
-
-    def __str__(self):
-        return "function"
-
-    def __nonzero__(self):
-        return True
-
-    @property
-    def name(self):
-        return self._function.__name__
-
-    @property
-    def as_trait(self):
-        return self._function
-
-    @property
-    def as_target(self):
-        raise NotImplementedError("Cannot be a trait target!")
-
-
-class PropertyContext(object):
+class PropertyContext(TraitContext):
+    BINDER_ID = 'property'
+    VALID = True
+    
     def __init__(self, prop, name):
-        self._property = prop
+        self._source = prop
+        self._target = None
         self._name = name
-
-    def __str__(self):
-        return "property"
-
-    def __nonzero__(self):
-        return True
-
-    @property
-    def name(self):
-        return self._name
-
-    @property
-    def as_trait(self):
-        return self._property
-
-    @property
-    def as_target(self):
-        raise NotImplementedError("Cannot be a trait target!")
