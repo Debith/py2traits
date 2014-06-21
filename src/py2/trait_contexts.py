@@ -54,9 +54,9 @@ class ClassContext(object):
     def __iter__(self):
         for name, obj in vars(self._class).items():
             if isinstance(obj, staticmethod):
-                yield FunctionContext(obj)
+                yield StaticFunctionContext(obj)
             elif isinstance(obj, classmethod):
-                yield FunctionContext(obj)
+                yield ClassFunctionContext(obj)
             elif isinstance(obj, property):
                 yield PropertyContext(obj, name)
             elif inspect.ismethoddescriptor(obj):
@@ -160,6 +160,52 @@ class UnboundMethodContext(object):
         raise NotImplementedError("Cannot be a trait target!")
 
 
+class StaticFunctionContext(object):
+    def __init__(self, function):
+        self._function = function
+
+    def __str__(self):
+        return "function"
+
+    def __nonzero__(self):
+        return True
+
+    @property
+    def name(self):
+        return self._function.__func__.__name__
+
+    @property
+    def as_trait(self):
+        return self._function
+
+    @property
+    def as_target(self):
+        raise NotImplementedError("Cannot be a trait target!")
+
+
+class ClassFunctionContext(object):
+    def __init__(self, function):
+        self._function = function
+
+    def __str__(self):
+        return "function"
+
+    def __nonzero__(self):
+        return True
+
+    @property
+    def name(self):
+        return self._function.__func__.__name__
+
+    @property
+    def as_trait(self):
+        return self._function
+
+    @property
+    def as_target(self):
+        raise NotImplementedError("Cannot be a trait target!")
+
+
 class FunctionContext(object):
     def __init__(self, function):
         self._function = function
@@ -172,7 +218,7 @@ class FunctionContext(object):
 
     @property
     def name(self):
-        return self._function._name
+        return self._function.__name__
 
     @property
     def as_trait(self):

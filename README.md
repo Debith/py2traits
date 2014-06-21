@@ -4,7 +4,7 @@ PyTraits
 Comprehensive trait support for Python
 
 Support:
-  * Python 3.x
+  * Python 3.x (in short future)
   * Python 2.7+
   * Python 2.6 and lower (NestedDict is based on normal dict,
                           thus ordering is not guaranteed)
@@ -101,15 +101,22 @@ TBD
 History
 =======
 
-0.1 Initial Version
-  - prepared files for Python 2.x
-  - prepared files for Python 3.x
-
-0.2 Apache License Updated
-  - Added apache 2.0 license to all files
-  - Set the character set as utf-8 for all files
+0.4 Completed function binding with examples in Python 2.x
+  - Separate functions can now be bound to classes
+    - Functions with 'self' as a first parameter will be acting as a method
+    - Functions with 'cls' as a first parameter will be acting as classmethod
+    - Other functions will be static methods.
+  - Fixed an issue with binding functions
 
 0.3 Trait extension support without conflicts for Python 2.x
   - Classes can be extended
   - Instances can be extended
   - Python 2.x supported
+
+0.2 Apache License Updated
+  - Added apache 2.0 license to all files
+  - Set the character set as utf-8 for all files
+
+0.1 Initial Version
+  - prepared files for Python 2.x
+  - prepared files for Python 3.x
