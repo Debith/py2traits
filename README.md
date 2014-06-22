@@ -31,40 +31,45 @@ Features
     - [ ] Exclusion
  - Supported Trait Targets
     - [X] Classes
-    - [ ] Instances
+    - [X] Instances
  - Supported Trait Types
     - [X] Classes
     - [X] Instances
     - [X] Methods
     - [X] Functions
+      - [X] as instance methods
+      - [X] as classmethods
+      - [X] as staticmethods
     - [X] Properties
  - [X] Singleton
  - [X] NestedDict
  - Examples
-    - [X] Class
+    - [X] [X] Class
        - [X] Unbound method in Python 2.x
        - [X] Bound method in Python 2.x
        - [ ] Method in Python 3.x
        - [X] Property as part of class
        - [ ] Property directly
-       - [ ] Function
-       - [ ] Static method
-       - [ ] Class method
+       - [X] Function
+         - [X] Instance method         
+         - [X] Class method
+         - [X] Static method
        - [ ] Conflicts
           - [ ] symmetric sum
           - [ ] override
           - [ ] alias
           - [ ] exclude
        - [ ] Multiple traits
-    - [ ] Instance
-       - [ ] Unbound method in Python 2.x
-       - [ ] Bound method in Python 2.x
+    - [X] Instance
+       - [X] Unbound method in Python 2.x
+       - [X] Bound method in Python 2.x
        - [ ] Method in Python 3.x
        - [ ] Property as part of class
        - [ ] Property directly
-       - [ ] Function
-       - [ ] Static method
-       - [ ] Class method
+       - [X] Function
+         - [X] Instance method         
+         - [X] Class method
+         - [X] Static method
        - [ ] Conflicts
           - [ ] symmetric sum
           - [ ] override
@@ -100,6 +105,10 @@ TBD
 
 History
 =======
+
+0.5 Instances can now be extended with traits in Python 3.x
+  - Instance support now similar to classes
+  - Added more examples
 
 0.4 Completed function binding with examples in Python 2.x
   - Separate functions can now be bound to classes

@@ -13,9 +13,13 @@ class ExampleTrait(object):
         return 42
 
 
+# Combine an instance with other instance.
+example_instance = ExampleClass()
 my_trait_instance = ExampleTrait()
-add_traits(ExampleClass, my_trait_instance.trait_method)
+add_traits(example_instance, my_trait_instance.trait_method)
 
-assert hasattr(ExampleClass, 'trait_method'), "failed composition"
+assert hasattr(example_instance, 'trait_method'), "Method must be found from the instance"
+assert not hasattr(ExampleClass, 'trait_method'), "Method must not found from the class!"
 assert not issubclass(ExampleClass, ExampleTrait)
-assert ExampleClass().trait_method() == 42, "composition incomplete"
+assert example_instance.trait_method() == 42, "composition incomplete"
+

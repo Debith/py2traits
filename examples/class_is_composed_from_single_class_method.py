@@ -11,10 +11,8 @@ class ExampleTrait(object):
     def trait_method(self):
         return 42
 
-# Here we combine ExampleTrait into ExampleClass, which will result
-# Example class to contain all ExampleTrait classes method, in this case
-# just trait_method.
-add_traits(ExampleClass, ExampleTrait)
+
+add_traits(ExampleClass, ExampleTrait.trait_method)
 
 
 assert hasattr(ExampleClass, 'trait_method'), "failed composition"

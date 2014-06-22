@@ -26,4 +26,4 @@ for filename in os.listdir(ROOT):
     
     os.system(filename)
     
-print len(os.listdir(ROOT)) - 1, "tests run"
+print len(os.listdir(ROOT)) - 1, "examples run"

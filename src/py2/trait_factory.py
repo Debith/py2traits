@@ -19,6 +19,7 @@
 import inspect
 from trait_contexts import (NullContext,
                             ClassContext,
+                            InstanceContext,
                             DecoratedFunctionContext,
                             FunctionContext,
                             BoundMethodContext,
@@ -39,7 +40,7 @@ class TraitTarget(object):
         elif inspect.isroutine(obj):
             return NullContext('Function objects can not be extended')
         elif not isinstance(obj, type):
-            return NullContext('Instances are not supported yet! Hold on!')
+            return InstanceContext(obj)
         elif inspect.isclass(obj):
             return ClassContext(obj)
         else:

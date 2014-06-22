@@ -76,18 +76,18 @@ class ClassContext(TraitContext):
     def __iter__(self):
         for name, obj in vars(self._source).items():
             if isinstance(obj, staticmethod):
-                yield StaticFunctionContext(obj)
+                yield DecoratedFunctionContext(obj)
             elif isinstance(obj, classmethod):
-                yield ClassFunctionContext(obj)
+                yield DecoratedFunctionContext(obj)
             elif isinstance(obj, property):
                 yield PropertyContext(obj, name)
             elif inspect.ismethoddescriptor(obj):
                 yield UnboundMethodContext(obj)
             else:
                 obj_via_getattr = getattr(self._source, name)
-                if (inspect.isfunction(obj_via_getattr) or
+                if (inspect.ismethod(obj_via_getattr) or
                     inspect.ismethoddescriptor(obj_via_getattr)):
-                    yield UnboundMethodContext(obj)
+                    yield UnboundMethodContext(obj_via_getattr)
 
 
 class InstanceContext(TraitContext):
