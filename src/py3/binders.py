@@ -17,10 +17,10 @@
 '''
 
 # TODO: This module should be standalone.
-from nesteddict import NestedDict
+from .nesteddict import NestedDict
 
 
-def bind_bound_method_to_class(clazz, method, name=None):
+def bind_method_to_class(clazz, method, name=None):
     """
     Binds a single method into class.
 
@@ -46,7 +46,7 @@ def bind_bound_method_to_class(clazz, method, name=None):
     ...         return self.__class__.__name__, self._value
     ...
     >>> my_trait = MyTrait()
-    >>> bind_bound_method_to_class(MyClass, my_trait.trait_method)
+    >>> bind_method_to_class(MyClass, my_trait.trait_method)
     >>> MyClass().trait_method()
     ('MyClass', 42)
 
@@ -56,44 +56,6 @@ def bind_bound_method_to_class(clazz, method, name=None):
     # Rip out the original function from the class and set it also
     # as member of our new class.
     clazz_function = method.__self__.__class__.__dict__[method.__name__]
-    setattr(clazz, name or method.__name__, clazz_function)
-
-
-def bind_unbound_method_to_class(clazz, method, name=None):
-    """
-    Binds a single method into class.
-
-    This can be very useful in situation, where your trait properties
-    are dynamic, and you first need to construct your trait in some
-    fashion and after the trait is ready, you can transfer the qualities
-    to some class (You don't have always full control to creation
-    process).
-
-    @param clazz: Class to be extended
-    @param method: Method that is added as a trait into class
-    @param name: New name for the method. When omitted, original is used.
-
-    >>> class MyClass(object):
-    ...     def __init__(self):
-    ...         self._value = 42
-    ...
-    >>> class MyTrait(object):
-    ...     def __init__(self):
-    ...         self._value = 0
-    ...
-    ...     def trait_method(self):
-    ...         return self.__class__.__name__, self._value
-    ...
-    >>> bind_unbound_method_to_class(MyClass, MyTrait.trait_method)
-    >>> MyClass().trait_method()
-    ('MyClass', 42)
-
-    >>> MyTrait().trait_method()
-    ('MyTrait', 0)
-    """
-    # For unbound methods, it is enough that we dig out the class function
-    # and set it as a member of new class.
-    clazz_function = method.im_class.__dict__[method.__name__]
     setattr(clazz, name or method.__name__, clazz_function)
 
 
@@ -149,49 +111,8 @@ def bind_property_to_class(clazz, prop, name):
     setattr(clazz, name, prop)
 
 
-def bind_unbound_method_to_instance(instance, method, name=None):
-    """
-    Binds a single method into class.
-
-    This can be very useful in situation, where your trait properties
-    are dynamic, and you first need to construct your trait in some
-    fashion and after the trait is ready, you can transfer the qualities
-    to some class (You don't have always full control to creation
-    process).
-
-    @param clazz: Class to be extended
-    @param method: Method that is added as a trait into class
-    @param name: New name for the method. When omitted, original is used.
-
-    >>> class MyClass(object):
-    ...     def __init__(self):
-    ...         self._value = 42
-    ...
-    >>> class MyTrait(object):
-    ...     def __init__(self):
-    ...         self._value = 0
-    ...
-    ...     def trait_method(self):
-    ...         return self.__class__.__name__, self._value
-    ...
-    >>> instance = MyClass()
-    >>> bind_unbound_method_to_instance(instance, MyTrait.trait_method)
-    >>> instance.trait_method()
-    ('MyClass', 42)
-
-    >>> MyTrait().trait_method()
-    ('MyTrait', 0)
-    """
-    # For unbound methods, it is enough that we dig out the class function,
-    # bind it to new instance and add it as a instance member.
-    clazz_function = method.im_class.__dict__[method.__name__]
-    bound_method = clazz_function.__get__(instance, instance.__class__)
-    instance.__dict__[name or method.__name__] = bound_method
-
-
 def bind_method_to_instance(instance, method, name=None):
     """
-
     @param instance: Instance to be extended.
     @param name: New name for the method. When omitted, original is used.
 
@@ -277,12 +198,10 @@ def bind_property_to_instance(instance, trait, name=None):
 
 # FIXME: Move this elsewhere. This adds dependency we really do not need here.
 binders = NestedDict([
-            (('bound method', 'class'), bind_bound_method_to_class),
-            (('unbound method', 'class'), bind_unbound_method_to_class),
+            (('method', 'class'), bind_method_to_class),
             (('function', 'class'), bind_function_to_class),
             (('property', 'class'), bind_property_to_class),
-            (('bound method', 'instance'), bind_method_to_instance),
-            (('unbound method', 'instance'), bind_unbound_method_to_instance),
+            (('method', 'instance'), bind_method_to_instance),
             (('function', 'instance'), bind_function_to_instance),
             (('property', 'instance'), bind_property_to_instance)],
             depth=2, leaf_type=None)

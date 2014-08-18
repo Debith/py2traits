@@ -17,6 +17,15 @@
 '''
 
 import os
+import sys
+
+try:
+    from io import StringIO
+except ImportError:
+    from StringIO import StringIO
+
+write_screen = sys.stdout
+sys.stdout = StringIO()
 
 ROOT = os.path.dirname(__file__)
 
@@ -24,6 +33,13 @@ for filename in os.listdir(ROOT):
     if filename.startswith('_'):
         continue
     
-    os.system(filename)
+    write_screen.write(filename + ' ... ')
     
-print len(os.listdir(ROOT)) - 1, "examples run"
+    with open(filename, 'r') as fp:
+        exec(fp.read())        
+        
+    msg = sys.stdout.read()
+    if not len(msg):
+        write_screen.write('OK\n')
+    
+write_screen.write("\nFinished: %d " % (len(os.listdir(ROOT)) - 1) + "examples run.\n\n")

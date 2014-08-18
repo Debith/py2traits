@@ -26,7 +26,7 @@ class TraitContext(object):
     def __str__(self):
         return self.BINDER_ID
     
-    def __nonzero__(self):
+    def __bool__(self):
         return self.VALID
     
     @property
@@ -50,6 +50,7 @@ class NullContext(TraitContext):
     VALID = False
     
     def __init__(self, extra_message):
+        print("PyTraits: NullContext:", extra_message)
         self._extra_message = extra_message
 
     @property
@@ -81,12 +82,12 @@ class ClassContext(TraitContext):
             elif isinstance(obj, property):
                 yield PropertyContext(obj, name)
             elif inspect.ismethoddescriptor(obj):
-                yield UnboundMethodContext(obj)
+                yield MethodContext(obj)
             else:
                 obj_via_getattr = getattr(self._source, name)
-                if (inspect.ismethod(obj_via_getattr) or
+                if (inspect.isfunction(obj_via_getattr) or
                     inspect.ismethoddescriptor(obj_via_getattr)):
-                    yield UnboundMethodContext(obj_via_getattr)
+                    yield FunctionContext(obj_via_getattr)
 
 
 class InstanceContext(TraitContext):
@@ -105,25 +106,15 @@ class InstanceContext(TraitContext):
         self._name = instance.__class__.__name__
 
 
-class BoundMethodContext(TraitContext):
-    BINDER_ID = 'bound method'
+class MethodContext(TraitContext):
+    BINDER_ID = 'method'
     VALID = True
     
-    def __init__(self, bound_method):
-        self._source = bound_method
+    def __init__(self, method):
+        self._source = method
         self._target = None
-        self._name = bound_method.__name__
+        self._name = method.__name__
 
-
-class UnboundMethodContext(TraitContext):
-    BINDER_ID = 'unbound method'
-    VALID = True
-    
-    def __init__(self, unbound_method):
-        self._source = unbound_method
-        self._target = None
-        self._name = unbound_method.__name__
-        
 
 class DecoratedFunctionContext(TraitContext):
     BINDER_ID = 'function'

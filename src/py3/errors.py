@@ -16,8 +16,13 @@
    limitations under the License.
 '''
 
-def add_traits(target_object, *traits, **resolved_conflicts):
-    pass
+# Exceptions
+UnextendableObjectError = "Target context can be only class or instance of class"
+InvalidAssignmentError = "Not possible to assign a key"
+SingletonError = 'Singletons are immutable'
 
-if __name__ == '__main__':
-    pass
+# Convert the strings to actual exception:
+#  - Variable name is converted to type of exception.
+#  - Variable value is added as message.
+from .magic import create_exception_classes
+exec(create_exception_classes)

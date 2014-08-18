@@ -16,12 +16,15 @@
    limitations under the License.
 '''
 
+from .errors import SingletonError
+
+
 class Singleton(type):
     """
     Turn the class to immutable singleton.
 
     >>> class Example(object, metaclass=Singleton):
-    ...     pass
+    ...    pass
     ...
     >>> a = Example()
     >>> b = Example()
@@ -44,16 +47,20 @@ class Singleton(type):
     >>> MySingleton().new_item = False
     Traceback (most recent call last):
     ...
-    NotImplementedError: Singletons are immutable
+    errors.SingletonError: Singletons are immutable
     """
     def __call__(self, *args, **kwargs):
         try:
             return self.__instance
         except AttributeError:
             def immutable_object(*args):
-                raise NotImplementedError('Singletons are immutable')
+                raise SingletonError()
 
             self.__instance = super(Singleton, self).__call__(*args, **kwargs)
             self.__setitem__ = immutable_object
             self.__setattr__ = immutable_object
             return self.__instance
+        
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()

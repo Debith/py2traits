@@ -46,7 +46,8 @@ class NestedDict(odict):
     Nested dictionary with support of maximum depth with default type.
     """
     def __init__(self, *items, depth=None, leaf_type=list):
-        assert isinstance(leaf_type, type)
+        assert not leaf_type or isinstance(leaf_type, type), \
+            "Type of leaf_type should be 'type' not %s" % type(leaf_type)
         assert depth is None or isinstance(depth, int) and depth > 0
         
         self.__depth = depth

@@ -16,8 +16,21 @@
    limitations under the License.
 '''
 
-from .nesteddict import NestedDict
-from .singleton import Singleton
-from .combiner import combine_class
-from .extendable import extendable
-from .trait_composer import add_traits
+
+from .trait_factory import TraitSource
+
+
+class Traits(object):
+    """
+    Collection class for traits.
+    """
+    def __init__(self, traits):
+        self._traits = [TraitSource(trait) for trait in traits]
+
+    def __iter__(self):
+        for trait in self._traits:
+            try:
+                for part in trait:
+                    yield part
+            except TypeError:
+                yield trait
