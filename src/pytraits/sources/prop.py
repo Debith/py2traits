@@ -16,21 +16,13 @@
    limitations under the License.
 '''
 
+class PropertySource:
+    def __init__(self, prop, name):
+        self._property = prop
+        self._name = name
 
-from .trait_factory import TraitSource
+    def for_class(self, clazz):
+        setattr(clazz, self._name, self._property)
 
-
-class Traits(object):
-    """
-    Collection class for traits.
-    """
-    def __init__(self, traits):
-        self._traits = [TraitSource(trait) for trait in traits]
-
-    def __iter__(self):
-        for trait in self._traits:
-            try:
-                for part in trait:
-                    yield part
-            except TypeError:
-                yield trait
+    def for_instance(self, instance):
+        setattr(instance.__class__, self._name, self._property)        

@@ -1,4 +1,4 @@
-    #!/usr/bin/python -tt
+#!/usr/bin/python -tt
 # -*- coding: utf-8 -*-
 '''
    Copyright 2014 Teppo Perä
@@ -16,6 +16,17 @@
    limitations under the License.
 '''
 
-__all__ = ['combine_class', 'add_traits', 'extendable', 'Singleton', 'NestedDict']
+class ClassTarget(object):
+    """
+    """
+    def __init__(self, clazz):
+        self._class = clazz
 
-from src import combine_class, add_traits, extendable, Singleton, NestedDict
+    def add_traits(self, traits):
+        for trait in traits:
+            trait.for_class(self._class)
+
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()

@@ -16,8 +16,8 @@
    limitations under the License.
 '''
 
-from nesteddict import NestedDict
-from singleton import Singleton
-from combiner import combine_class
-from extendable import extendable
-from trait_composer import add_traits
+from .core.nesteddict import NestedDict
+from .core.singleton import Singleton
+from .combiner import combine_class
+from .extendable import extendable
+from .trait_composer import add_traits

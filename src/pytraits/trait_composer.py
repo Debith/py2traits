@@ -16,11 +16,12 @@
    limitations under the License.
 '''
 
-from singleton import Singleton
-from trait_factory import TraitTarget
-from errors import UnextendableObjectError
-from traits import Traits
-from binders import binders
+from .core.singleton import Singleton
+from .core.nesteddict import NestedDict
+from .targets import TraitTarget
+from .sources import TraitSource, Traits
+from .core import binders
+from .core.utils import flatten
 
 
 class TraitComposer:
@@ -28,15 +29,6 @@ class TraitComposer:
 
     """
     __metaclass__ = Singleton
-
-    def _bind_objects(self, target, source):
-        # This works as an example of subject-oriented programming, where
-        # function to be called depends from the objects associated in the call.
-        #
-        # See more from: http://en.wikipedia.org/wiki/Subject-oriented_programming
-        return binders[str(source), str(target)](target.as_target,
-                                                 source.as_trait,
-                                                 source.name)
 
     def bind_traits(self, obj, *traits):
         """
@@ -56,10 +48,6 @@ class TraitComposer:
         ...    def example_method(self):
         ...        return 42
         ...
-        >>> add_traits(ExampleClass, ExampleTrait)
-        Traceback (most recent call last):
-        ...
-        >>> #add_traits(ExampleClass, uses=ExampleTrait.example_method)
         """
         # Return immediately, if no traits provided.
         if not len(traits):
@@ -68,14 +56,9 @@ class TraitComposer:
         # Attempt to cretate target context object. Builtins are not supported
         # thus exception is raised.
         target_object = TraitTarget(obj)
-        if not target_object:
-            raise UnextendableObjectError(target_object.error_message)
 
         # Compose traits into target object
-        for trait in Traits(traits):
-            if not trait:
-                continue
-            self._bind_objects(target_object, trait)
+        target_object.add_traits(Traits(traits))
 
 
 add_traits = TraitComposer().bind_traits

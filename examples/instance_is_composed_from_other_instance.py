@@ -22,4 +22,3 @@ assert hasattr(example_instance, 'trait_method'), "Method must be found from the
 assert not hasattr(ExampleClass, 'trait_method'), "Method must not found from the class!"
 assert not issubclass(ExampleClass, ExampleTrait)
 assert example_instance.trait_method() == 42, "composition incomplete"
-

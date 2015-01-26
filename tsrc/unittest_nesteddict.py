@@ -59,7 +59,7 @@ class TestNestedDict(unittest.TestCase):
         my_dict = ndict()
         my_dict['a'] = 1
 
-        with self.assertRaisesRegexp(Exception, "Not possible to assign a key"):
+        with self.assertRaisesRegex(Exception, "Not possible to assign a key"):
             my_dict['a', 'b'] = 2
 
     def test_can_be_created_using_list_of_keys(self):
@@ -74,22 +74,22 @@ class TestNestedDict(unittest.TestCase):
         my_dict[1].append('value')
         my_dict[1].append(True)
 
-        self.assertEquals(my_dict[1], ['value', True])
+        self.assertEqual(my_dict[1], ['value', True])
 
     def test_supports_leaf_to_be_dictionary(self):
         my_dict = ndict(depth=1, leaf_type=dict)
         my_dict[1][1] = 'a'
         my_dict[1][2] = 'b'
 
-        self.assertEquals(my_dict[1][1], 'a')
-        self.assertEquals(my_dict[1][2], 'b')
+        self.assertEqual(my_dict[1][1], 'a')
+        self.assertEqual(my_dict[1][2], 'b')
 
     def test_can_contain_multiple_levels(self):
         my_dict = ndict(depth=3, leaf_type=int)
         my_dict[1, 2, 3] += 4
         my_dict[1, 2, 3] += 12
 
-        self.assertEquals(my_dict[1, 2, 3], 16)
+        self.assertEqual(my_dict[1, 2, 3], 16)
 
     @examples(('a',       ndict(), "NestedDict([(('a',), NestedDict())])"),
             ((('a', 'b'), ndict(), "NestedDict([(('a', 'b'), NestedDict())])")),

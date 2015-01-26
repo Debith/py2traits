@@ -16,13 +16,14 @@
    limitations under the License.
 '''
 
-# Exceptions
-UnextendableObjectError = "Target context can be only class or instance of class"
-InvalidAssignmentError = "Not possible to assign a key"
-SingletonError = 'Singletons are immutable'
+from ..core.utils import flatten
+from .factory import TraitSource
 
-# Convert the strings to actual exception:
-#  - Variable name is converted to type of exception.
-#  - Variable value is added as message.
-from magic import create_exception_classes
-exec(create_exception_classes)
+
+class Traits(object):
+    def __init__(self, traits):
+        self._traits = traits
+
+    def __iter__(self):
+        for trait in flatten(map(TraitSource, self._traits)):
+            yield trait

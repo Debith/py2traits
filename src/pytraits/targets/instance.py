@@ -16,30 +16,17 @@
    limitations under the License.
 '''
 
-import os
-import sys
+class InstanceTarget(object):
+    """
+    """
+    def __init__(self, instance):
+        self._instance = instance
 
-try:
-    from io import StringIO
-except ImportError:
-    from StringIO import StringIO
+    def add_traits(self, traits):
+        for trait in traits:
+            trait.for_instance(self._instance)
 
-write_screen = sys.stdout
-sys.stdout = StringIO()
 
-ROOT = os.path.dirname(__file__)
-
-for filename in os.listdir(ROOT):
-    if filename.startswith('_'):
-        continue
-    
-    write_screen.write(filename + ' ... ')
-    
-    with open(filename, 'r') as fp:
-        exec(fp.read())        
-        
-    msg = sys.stdout.read()
-    if not len(msg):
-        write_screen.write('OK\n')
-    
-write_screen.write("\nFinished: %d " % (len(os.listdir(ROOT)) - 1) + "examples run.\n\n")
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()

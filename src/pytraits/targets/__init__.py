@@ -1,7 +1,7 @@
 #!/usr/bin/python -tt
 # -*- coding: utf-8 -*-
 '''
-   Copyright 2014 Teppo PerÃ¤
+   Copyright 2014 Teppo Perä
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -16,11 +16,4 @@
    limitations under the License.
 '''
 
-import sys
-
-if sys.version_info.major == 3:
-    from .py3 import combine_class, add_traits, extendable, Singleton, NestedDict
-else:
-    from py2 import combine_class, add_traits, extendable, Singleton, NestedDict
-    
-del sys
+from .factory import TraitTarget

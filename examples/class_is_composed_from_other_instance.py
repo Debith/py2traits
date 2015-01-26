@@ -17,10 +17,11 @@ class ExampleTrait(object):
     def trait_method(self):
         return self._variable
 
-# Here we combine ExampleTrait into ExampleClass, which will result
+
+# Here we combine instance of ExampleTrait into ExampleClass, which will result
 # Example class to contain all ExampleTrait classes method, in this case
 # just trait_method.
-add_traits(ExampleClass, ExampleTrait)
+add_traits(ExampleClass, ExampleTrait())
 
 
 assert hasattr(ExampleClass, 'trait_method'), "Failed to compose trait method into class!"

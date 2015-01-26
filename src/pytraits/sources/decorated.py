@@ -16,8 +16,14 @@
    limitations under the License.
 '''
 
-from .nesteddict import NestedDict
-from .singleton import Singleton
-from .combiner import combine_class
-from .extendable import extendable
-from .trait_composer import add_traits
+class DecoratedFunctionSource:
+    def __init__(self, decorated_function, name = None):
+        self._decorated_function = decorated_function
+        self._name = name or decorated_function.__func__.__name__
+
+    def for_class(self, clazz):
+        setattr(clazz, self._name, self._decorated_function)
+
+    def for_instance(self, instance):
+        new_function = self._decorated_function.__get__(instance, instance.__class__)
+        instance.__dict__[self._name] = new_function
