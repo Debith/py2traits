@@ -6,3 +6,4 @@ utils/
 *.sln
 *.suo
 *.pyproj
+*.user
