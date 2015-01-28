@@ -16,8 +16,7 @@
    limitations under the License.
 '''
 
-from core.nesteddict import NestedDict
-from core.singleton import Singleton
-from combiner import combine_class
-from extendable import extendable
-from trait_composer import add_traits
+from pytraits.core import ndict, Singleton
+from pytraits.combiner import combine_class
+from pytraits.extendable import extendable
+from pytraits.trait_composer import add_traits

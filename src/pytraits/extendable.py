@@ -16,7 +16,7 @@
    limitations under the License.
 '''
 
-import trait_composer
+from pytraits.trait_composer import add_traits
 
 def extendable(target):
     """
@@ -53,7 +53,7 @@ def extendable(target):
             self._target_object = None
 
         def __call__(self, *args, **kwargs):
-            trait_composer.add_traits(self._target_object, *args, **kwargs)
+            add_traits(self._target_object, *args, **kwargs)
 
         def __get__(self, instance, clazz):
             self._target_object = instance or clazz

@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 from pytraits import extendable
 
-
 # Let's start by creating a super simple class without any methods. Ok, we do add
 # constructor there, but that is just for showing that our composition will really
 # work.

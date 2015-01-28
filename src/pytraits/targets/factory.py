@@ -18,9 +18,9 @@
 
 import inspect
 
-import pytraits.core
-import clazz
-import instance
+from pytraits.core.errors import  UnextendableObjectError
+from pytraits.targets.clazz import ClassTarget
+from pytraits.targets.instance import InstanceTarget
 
 class TraitTarget(object):
     """
@@ -32,8 +32,8 @@ class TraitTarget(object):
         elif inspect.isroutine(obj):
             raise UnextendableObjectError('Function objects can not be extended!')
         elif not isinstance(obj, type):
-            return instance.InstanceTarget(obj)
+            return InstanceTarget(obj)
         elif inspect.isclass(obj):
-            return clazz.ClassTarget(obj)
+            return ClassTarget(obj)
         else:
             raise UnextendableObjectError('Properties can not be extended!')

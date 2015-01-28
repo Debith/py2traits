@@ -16,4 +16,4 @@
    limitations under the License.
 '''
 
-from factory import TraitTarget
+from pytraits.targets.factory import TraitTarget

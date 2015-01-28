@@ -19,10 +19,10 @@
 import sys
 import inspect
 
-import function
-import method
-import decorated
-import prop
+from pytraits.sources.function import FunctionSource
+from pytraits.sources.method import *
+from pytraits.sources.decorated import DecoratedFunctionSource 
+from pytraits.sources.prop import PropertySource
 
 
 class ClassSource(object):
@@ -43,20 +43,20 @@ class ClassSource(object):
                 continue # Ignore more builtin stuff
 
             if item.kind == "class method":
-                yield decorated.DecoratedFunctionSource(item.object)
+                yield DecoratedFunctionSource(item.object)
             elif item.kind == "static method":
-                yield decorated.DecoratedFunctionSource(item.object)
+                yield DecoratedFunctionSource(item.object)
             elif item.kind == "data":
                 pass # no support yet
             elif item.kind == "method":
                 if sys.version_info.major == 3:
-                    yield method.MethodSource(item.object)
+                    yield MethodSource(item.object)
                 else:
                     if item.object.__self__:
-                        yield method.BoundMethodSource(item.object)
+                        yield BoundMethodSource(item.object)
                     else:
-                        yield method.UnboundMethodSource(item.object)
+                        yield UnboundMethodSource(item.object)
             elif item.kind == "property":
-                yield prop.PropertySource(item.object, item.name)
+                yield PropertySource(item.object, item.name)
             else:
                 raise TypeError("We do not recognize this item: %s" % item)

@@ -16,16 +16,16 @@
    limitations under the License.
 '''
 
-import core
-import targets
-import sources
+from pytraits.core import Singleton
+from pytraits.targets import TraitTarget
+from pytraits.sources import Traits
 
 
 class TraitComposer:
     """
     Main class that handles composing traits into target object.
     """
-    __metaclass__ = core.Singleton
+    __metaclass__ = Singleton
 
     def bind_traits(self, obj, *traits):
         """
@@ -52,10 +52,10 @@ class TraitComposer:
 
         # Attempt to cretate target context object. Builtins are not supported
         # thus exception is raised.
-        target_object = targets.TraitTarget(obj)
+        target_object = TraitTarget(obj)
 
         # Compose traits into target object
-        target_object.add_traits(sources.Traits(traits))
+        target_object.add_traits(Traits(traits))
 
 
 add_traits = TraitComposer().bind_traits

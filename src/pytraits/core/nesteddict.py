@@ -17,7 +17,7 @@
 '''
 
 from collections import OrderedDict as odict
-import utils
+import pytraits.core.utils
 
 class InvalidAssignmentError(Exception):
     __str__ = lambda self: "Not possible to assign a key"

@@ -16,7 +16,7 @@
    limitations under the License.
 '''
 
-import trait_composer
+from pytraits.trait_composer import add_traits
 
 
 def combine_class(*traits, **resolved_conflicts):
@@ -38,7 +38,7 @@ def combine_class(*traits, **resolved_conflicts):
     (1, 2, 3)
     """
     NewClass = type("NewClass", (object,), {})
-    trait_composer.add_traits(NewClass, *traits)
+    add_traits(NewClass, *traits)
     return NewClass
 
 

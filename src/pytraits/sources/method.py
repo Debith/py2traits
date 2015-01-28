@@ -28,11 +28,22 @@ if sys.version_info.major == 3:
         def for_class(self, clazz):
             # Rip out the original function from the class and set it also
             # as member of our new class.
-            setattr(clazz, self._name, self._method)
+            # TODO: Seems that we are getting wrong object type here. Need to work
+            #       with factories to identify objects properly.
+            try:
+                clazz_function = self._method.__self__.__class__.__dict__[self._method.__name__]
+                setattr(clazz, self._name, clazz_function)
+            except:
+                setattr(clazz, self._name, self._method)
 
         def for_instance(self, instance):
-            new_method = self._method.__get__(instance, instance.__class__)
-            instance.__dict__[self._name] = new_method
+            try:
+                clazz_function = self._method.__self__.__class__.__dict__[self._method.__name__]
+                bound_method = clazz_function.__get__(instance, instance.__class__)
+                instance.__dict__[self._name] = bound_method
+            except:
+                new_method = self._method.__get__(instance, instance.__class__)
+                instance.__dict__[self._name] = new_method
 else:
     class UnboundMethodSource:
         def __init__(self, method, name=None):
