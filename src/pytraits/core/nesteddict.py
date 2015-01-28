@@ -17,7 +17,7 @@
 '''
 
 from collections import OrderedDict as odict
-from .utils import is_container, has_dict_protocol
+import utils
 
 class InvalidAssignmentError(Exception):
     __str__ = lambda self: "Not possible to assign a key"

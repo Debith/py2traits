@@ -16,8 +16,8 @@
    limitations under the License.
 '''
 
-from ..core.utils import flatten
-from .factory import TraitSource
+from pytraits.core import flatten
+import factory
 
 
 class Traits(object):
@@ -25,5 +25,5 @@ class Traits(object):
         self._traits = traits
 
     def __iter__(self):
-        for trait in flatten(map(TraitSource, self._traits)):
+        for trait in flatten(map(factory.TraitSource, self._traits)):
             yield trait

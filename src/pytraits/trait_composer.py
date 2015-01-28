@@ -16,19 +16,16 @@
    limitations under the License.
 '''
 
-from .core.singleton import Singleton
-from .core.nesteddict import NestedDict
-from .targets import TraitTarget
-from .sources import TraitSource, Traits
-from .core import binders
-from .core.utils import flatten
+import core
+import targets
+import sources
 
 
 class TraitComposer:
     """
-
+    Main class that handles composing traits into target object.
     """
-    __metaclass__ = Singleton
+    __metaclass__ = core.Singleton
 
     def bind_traits(self, obj, *traits):
         """
@@ -55,10 +52,10 @@ class TraitComposer:
 
         # Attempt to cretate target context object. Builtins are not supported
         # thus exception is raised.
-        target_object = TraitTarget(obj)
+        target_object = targets.TraitTarget(obj)
 
         # Compose traits into target object
-        target_object.add_traits(Traits(traits))
+        target_object.add_traits(sources.Traits(traits))
 
 
 add_traits = TraitComposer().bind_traits

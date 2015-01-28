@@ -1,29 +1,50 @@
 #!/usr/bin/python -tt
 # -*- coding: utf-8 -*-
-from pytraits import add_traits
+from pytraits import extendable
 
 
-# Let's start by creating a super simple class without any methods. Ok, we do add
-# constructor there, but that is just for showing that our composition will really
-# work.
+# Let's start by creating a simple class with some values. It contains
+# one class variable and one private member. Composed methods will have
+# access to all these variables.
+@extendable
 class ExampleClass(object):
+    VALUE = 24
+
     def __init__(self):
-        self._variable = 42
+        self._value = 42
 
 
-# Then we create class, which will act as a Trait. It contains some behavior
-# that relies on the state of the ExampleClass. 
+# Then we create class, which will act as a Trait. It relies target class to
+# contain some state in order to work. This example shows that each type of
+# method can be composed to target class and that they will work as if they
+# were written there in the first place.
 class ExampleTrait(object):
-    def trait_method(self):
-        return self._variable
+    @classmethod
+    def class_method(cls):
+        return cls.VALUE
+
+    @staticmethod
+    def static_method():
+        return 42
+
+    def instance_method(self):
+        return self._value
+
+    @property
+    def value(self):
+        return self._value
 
 
 # Here we combine instance of ExampleTrait into ExampleClass, which will result
 # Example class to contain all ExampleTrait classes method, in this case
 # just trait_method.
-add_traits(ExampleClass, ExampleTrait())
+ExampleClass.add_traits(ExampleTrait())
 
 
-assert hasattr(ExampleClass, 'trait_method'), "Failed to compose trait method into class!"
-assert not issubclass(ExampleClass, ExampleTrait), "Trait composition should do inheritance."
-assert ExampleClass().trait_method() == 42, "class method to class composition is not working properly"
+# Here are the proofs that new method works as part of new class. Also we show
+# that there is no inheritance done for ExampleClass.
+assert ExampleClass.__bases__ == (object, ), "Inheritance has occurred!"
+assert ExampleClass.static_method() == 42, "Class composition fails with static method!"
+assert ExampleClass.class_method() == 24, "Class composition fails with class method!"
+assert ExampleClass().instance_method() == 42, "Class composition fails with instance method!"
+assert ExampleClass().value == 42, "Class composition fails with property!"

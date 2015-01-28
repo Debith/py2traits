@@ -16,8 +16,53 @@
    limitations under the License.
 '''
 
-def extendable():
-    pass
+import trait_composer
+
+def extendable(target):
+    """
+    Decorator that adds function for object to be extended using traits.
+
+    NOTE: The 'add_traits' function this extendable decorator adds contains
+          behavior that differs from usual function behavior. This method
+          alters its behavior depending is the function called on a class
+          or on an instance. If the function is invoked on class, then the
+          class gets updated by the traits, affecting all new instances
+          created from the class. On the other hand, if the function is invoked
+          on an instance, only that instance gets the update, NOT whole class.
+
+          See complete example from:
+          pytraits/examples/extendable_function_class_vs_instance.py
+
+    >>> @extendable
+    ... class ExampleClass:
+    ...     pass
+    ...
+    >>> hasattr(ExampleClass, 'add_traits')
+    True
+
+    >>> class InstanceExample:
+    ...     pass
+    ...
+    >>> instance_example = InstanceExample()
+    >>> _ = extendable(instance_example)
+    >>> hasattr(instance_example, 'add_traits')
+    True
+    """
+    class TypeFunction(object):
+        def __init__(self):
+            self._target_object = None
+
+        def __call__(self, *args, **kwargs):
+            trait_composer.add_traits(self._target_object, *args, **kwargs)
+
+        def __get__(self, instance, clazz):
+            self._target_object = instance or clazz
+            return self
+
+    target.add_traits = TypeFunction()
+    return target
+
 
 if __name__ == '__main__':
-    pass
+    import doctest
+    doctest.testmod()

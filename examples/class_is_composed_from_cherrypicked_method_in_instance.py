@@ -1,22 +1,32 @@
-
 #!/usr/bin/python -tt
 # -*- coding: utf-8 -*-
+from pytraits import extendable
 
-from pytraits import add_traits
-
-
+# Let's start by creating a super simple class without any methods. Ok, we do add
+# constructor there, but that is just for showing that our composition will really
+# work.
+@extendable
 class ExampleClass(object):
-    pass
+    def __init__(self):
+        self._value = 42
 
 
+# Then we create a class which contains single method that will be transferred 
+# as a part of the class above. Note that ExampleTrait requires target object
+# to contain attribute '_value', thus it won't work as a stand-alone object.
 class ExampleTrait(object):
     def trait_method(self):
-        return 42
+        return self._value
 
 
+# Then, we create instance out of our trait. After that we do the actual composition, 
+# where we cherry-pick 'trait_method' from ExampleTrait and add it into ExampleClass.
 my_trait_instance = ExampleTrait()
-add_traits(ExampleClass, my_trait_instance.trait_method)
+ExampleClass.add_traits(my_trait_instance.trait_method)
 
-assert hasattr(ExampleClass, 'trait_method'), "failed composition"
-assert not issubclass(ExampleClass, ExampleTrait)
-assert ExampleClass().trait_method() == 42, "composition incomplete"
+
+# Here are the proofs that new method works as part of new class. Also we show
+# that there is no inheritance done for ExampleClass.
+assert hasattr(ExampleClass, 'trait_method'), "Failed to cherry-pick method to class!"
+assert ExampleClass.__bases__ == (object, ), "Inheritance has occurred!"
+assert ExampleClass().trait_method() == 42, "Cherry-picked method not working properly in new class!"

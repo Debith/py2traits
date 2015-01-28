@@ -1,14 +1,20 @@
 #!/usr/bin/python -tt
 # -*- coding: utf-8 -*-
+from pytraits import extendable
 
-from pytraits import add_traits
 
-
+# Let's start by creating a super simple class without any methods. Ok, we do add
+# constructor there, but that is just for showing that our composition will really
+# work.
+@extendable
 class ExampleClass(object):
     def __init__(self):
         self._value = 42
 
 
+# Then we create a class which contains single method that will be transferred 
+# as a part of the class above. Note that ExampleTrait requires target object
+# to contain property 'trait_property', thus it won't work as a stand-alone object.
 class ExampleTrait(object):
     @property
     def trait_property(self):
@@ -18,12 +24,16 @@ class ExampleTrait(object):
 my_trait_instance = ExampleTrait()
 
 # FIXME: Cherrypicking from instance is not supported yet. One needs to able to choose
-#        the name and also pick up the property properly
+#        the name and also pick up the property properly.
 try:
-    add_traits(ExampleClass, my_trait_instance.__class__.trait_property)
-except TypeError:
-    add_traits(ExampleClass, my_trait_instance)
+    # TODO: working cherry-pick
+    raise NotImplementedError('')
+except NotImplementedError:
+    ExampleClass.add_traits(my_trait_instance)
 
-    assert hasattr(ExampleClass, 'trait_property'), "failed composition"
-    assert not issubclass(ExampleClass, ExampleTrait)
-    assert ExampleClass().trait_property == 42, "composition incomplete"
+
+    # Here are the proofs that new method works as part of new class. Also we show
+    # that there is no inheritance done for ExampleClass.
+    assert hasattr(ExampleClass, 'trait_property'), "Failed to compose property to class!"
+    assert ExampleClass.__bases__ == (object, ), "Inheritance has occurred!"
+    assert ExampleClass().trait_property == 42, "Cherry-picked method not working properly in new class!"

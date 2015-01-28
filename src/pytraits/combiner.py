@@ -16,8 +16,32 @@
    limitations under the License.
 '''
 
+import trait_composer
+
+
 def combine_class(*traits, **resolved_conflicts):
-    pass
+    """
+    This function composes new class out of any number of traits.
+
+    >>> class One:
+    ...     def first(self): return 1
+    ...
+    >>> class Two:
+    ...     def second(self): return 2
+    ...
+    >>> class Three:
+    ...     def third(self): return 3
+    ...
+    >>> Combination = combine_class(One, Two, Three)
+    >>> instance = Combination()
+    >>> instance.first(), instance.second(), instance.third()
+    (1, 2, 3)
+    """
+    NewClass = type("NewClass", (object,), {})
+    trait_composer.add_traits(NewClass, *traits)
+    return NewClass
+
 
 if __name__ == '__main__':
-    pass
+    import doctest
+    doctest.testmod()

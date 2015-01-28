@@ -1,2 +1,2 @@
-from .traits import Traits
-from .factory import TraitSource
+from traits import Traits
+from factory import TraitSource

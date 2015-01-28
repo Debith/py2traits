@@ -19,10 +19,10 @@
 import sys
 import inspect
 
-from .function import FunctionSource
-from .method import *
-from .decorated import DecoratedFunctionSource
-from .prop import PropertySource
+import function
+import method
+import decorated
+import prop
 
 
 class ClassSource(object):
@@ -43,20 +43,20 @@ class ClassSource(object):
                 continue # Ignore more builtin stuff
 
             if item.kind == "class method":
-                yield DecoratedFunctionSource(item.object)
+                yield decorated.DecoratedFunctionSource(item.object)
             elif item.kind == "static method":
-                yield DecoratedFunctionSource(item.object)
+                yield decorated.DecoratedFunctionSource(item.object)
             elif item.kind == "data":
                 pass # no support yet
             elif item.kind == "method":
                 if sys.version_info.major == 3:
-                    yield MethodSource(item.object)
+                    yield method.MethodSource(item.object)
                 else:
                     if item.object.__self__:
-                        yield BoundMethodSource(item.object)
+                        yield method.BoundMethodSource(item.object)
                     else:
-                        yield UnboundMethodSource(item.object)
+                        yield method.UnboundMethodSource(item.object)
             elif item.kind == "property":
-                yield PropertySource(item.object, item.name)
+                yield prop.PropertySource(item.object, item.name)
             else:
                 raise TypeError("We do not recognize this item: %s" % item)

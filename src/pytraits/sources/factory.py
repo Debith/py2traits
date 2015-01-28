@@ -19,13 +19,12 @@
 import sys
 import inspect
 
-# TODO: Improve this by making sources to register themselves somehow. 
-from .clazz import ClassSource
-from .instance import InstanceSource
-from .function import FunctionSource
-from .decorated import DecoratedFunctionSource
-from .method import *
-from .prop import PropertySource
+import clazz
+import instance
+import function
+import decorated
+import method
+import prop
 
 class TraitSource(object):
     """
@@ -36,12 +35,12 @@ class TraitSource(object):
             return InvalidSource('Built-in objects can not used as traits!')
         elif inspect.ismethod(obj):
             if sys.version_info.major == 3:
-                return MethodSource(obj)
+                return method.MethodSource(obj)
             else:
                 if obj.__self__:
-                    return BoundMethodSource(obj)
+                    return method.BoundMethodSource(obj)
                 else:
-                    return UnboundMethodSource(obj)
+                    return method.UnboundMethodSource(obj)
 
         elif inspect.isroutine(obj):
             try:
@@ -50,16 +49,18 @@ class TraitSource(object):
                 first_arg = ""
 
             if first_arg == 'self':
-                return FunctionSource(obj)
+                return function.FunctionSource(obj)
             elif first_arg == 'cls':
-                return DecoratedFunctionSource(classmethod(obj))
+                return decorated.DecoratedFunctionSource(classmethod(obj))
             else: # static
-                return DecoratedFunctionSource(staticmethod(obj))
+                return decorated.DecoratedFunctionSource(staticmethod(obj))
         elif inspect.isdatadescriptor(obj):
-            return PropertySource(obj)
-        elif not isinstance(obj, type):
-            return InstanceSource(obj)
+            return prop.PropertySource(obj)
         elif inspect.isclass(obj):
-            return ClassSource(obj)
+            return clazz.ClassSource(obj)
+        elif not isinstance(obj, type):
+            return instance.InstanceSource(obj)
+        elif inspect.isclass(obj):
+            return clazz.ClassSource(obj)
         else:
             return InvalidSource('Properties can not be extended!')

@@ -1,10 +1,11 @@
 #!/usr/bin/python -tt
 # -*- coding: utf-8 -*-
-from pytraits import add_traits
+from pytraits import extendable
 
 
 # We declare a class here we want to expand with new traits.
 # The class contains one class variable and one instance variable.
+@extendable
 class ExampleClass(object):
     VALUE = 'class member'
 
@@ -32,8 +33,10 @@ def new_static_function():
 
 # Lets bind these functions to our instance
 example_instance = ExampleClass()
-add_traits(example_instance, new_method, new_class_function, new_static_function)
+example_instance.add_traits(new_method, new_class_function, new_static_function)
 
+
+# Here we demonstrate new functions work inside the instance
 assert example_instance.new_method() == 'instance member'
 assert example_instance.new_class_function() == 'class member'
 assert example_instance.new_static_function() == 'static'

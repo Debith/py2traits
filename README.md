@@ -28,6 +28,7 @@ Features
 ========
  - Composition of Traits
     - [X] No conflicts
+    - [X] Cherry-picking
     - [ ] Symmertric Sum
     - [ ] Override
     - [ ] Alias
@@ -123,6 +124,12 @@ TBD
 
 History
 =======
+
+0.7 Improving usability of the library
+  - Introduced new extendable decorator, which adds function to add traits to object
+  - Introduced new function combine_class to create new classes out of traits
+  - Fixed module imports through out the library
+  - Improved documentation in examples
 
 0.6 Restructuring into library
   - Added support for py.test

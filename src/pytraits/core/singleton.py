@@ -16,7 +16,7 @@
    limitations under the License.
 '''
 
-from .errors import SingletonError
+from errors import SingletonError
 
 
 class Singleton(type):
