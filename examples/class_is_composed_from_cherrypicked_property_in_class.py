@@ -3,39 +3,35 @@
 from pytraits import extendable
 
 
-# Let's start by creating a super simple class without any methods. Ok, we do add
-# constructor there, but that is just for showing that our composition will really
-# work.
+# Let's start by creating a simple class with some values. It contains
+# only instance variables. Composed property will have access to all 
+# these variables.
 @extendable
 class ExampleClass(object):
     def __init__(self):
-        self._value = 42
+        self.public = 42
+        self._hidden = 43
+        self.__private = 44
 
 
-# Then we create a class which contains single method that will be transferred 
-# as a part of the class above. Note that ExampleTrait requires target object
-# to contain property 'trait_property', thus it won't work as a stand-alone object.
+# Then we create a class which contains different types of methods that will be
+# transferred as a part of the class above. Note that ExampleTrait requires target 
+# object to contain instance variables, thus it won't work as a stand-alone object.
 class ExampleTrait(object):
     @property
     def trait_property(self):
-        return self._value
+        return self.public, self._hidden, self.__private
 
 
-# FIXME: We are not yet supporting of cherry-picking property from the class.
-#        It is possible to add properties by adding whole class as a trait.
-#        This is because property does not know what is the name of the
-#        variable it is assigned to.
-#        See from except block how things work at the moment.
 try:
-    # TODO: working cherry-pick
+    # We don't support this yet. Property does not have name, thus we need to support
+    # renaming of trait before this can work.
     raise NotImplementedError('')
 except NotImplementedError:
     ExampleClass.add_traits(ExampleTrait)
 
-
-    # Here are the proofs that new method works as part of new class. Also we show
+    # Here are the proofs that composed property works as part of new class. Also we show
     # that there is no inheritance done for ExampleClass.
-    assert hasattr(ExampleClass, 'trait_property'), "Failed to compose property to class!"
     assert ExampleClass.__bases__ == (object, ), "Inheritance has occurred!"
-    assert ExampleClass().trait_property == 42, "Cherry-picked method not working properly in new class!"
+    assert ExampleClass().trait_property == (42, 43, 44), "Cherry-picked property not working properly in new class!"
 

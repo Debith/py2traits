@@ -3,32 +3,49 @@
 from pytraits import extendable
 
 
-# Let's start by creating a super simple class without any methods. Ok, we do add
-# constructor there, but that is just for showing that our composition will really
-# work.
+# Let's start by creating a simple class with some values. It contains
+# class variables and instance variables. Composed methods will have
+# access to all these variables.
 @extendable
 class ExampleClass(object):
+    PUBLIC = 24
+    _HIDDEN = 25
+    __PRIVATE = 26
+
     def __init__(self):
-        self._value = "instance method"
+        self.public = 42
+        self._hidden = 43
+        self.__private = 44
 
 
-# Then we create a class which contains single method that will be transferred 
-# as a part of the class above. Note that ExampleTrait requires target object
-# to contain method 'trait_method', thus it won't work as a stand-alone object.
-class ExampleTrait(object):        
-    def trait_method(self):
-        return self._value
+# Then we create a class which contains different types of methods that will be
+# transferred as a part of the class above. Note that ExampleTrait requires target 
+# object to contain class variables and instance variables, thus it won't work as a 
+# stand-alone object.
+class ExampleTrait(object):
+    @staticmethod
+    def static_method():
+        return 1, 2, 3
+
+    @classmethod
+    def class_method(cls):
+        return cls.PUBLIC, cls._HIDDEN, cls.__PRIVATE
+
+    def instance_method(self):
+        return self.public, self._hidden, self.__private
 
 
-# Here we have an instance of our class which we are going to extend by
-# cherry-picking single method from the class and as it as a member of
-# our instance.
+# Create instance of target class and cherry-pick methods from ExampleTrait class.
 example_instance = ExampleClass()
-example_instance.add_traits(ExampleTrait.trait_method)
+example_instance.add_traits(ExampleTrait.instance_method, 
+                            ExampleTrait.class_method, 
+                            ExampleTrait.static_method)
 
 
-# Main requirement for extending instances is that the class should be 
-# untouched and only the given instance gets extended.
-assert hasattr(example_instance, 'trait_method'), "Method must be found from the instance!"
-assert not hasattr(ExampleClass, 'trait_method'), "Method must not found from the class!"
-assert example_instance.trait_method() == 'instance method', "Method should be part of new instance!"
+# Here are the proofs that composed methods work as part of new class.
+assert example_instance.instance_method() == (42, 43, 44), "Instance composition fails with instance method!"
+assert example_instance.class_method() == (24, 25, 26), "Instance composition fails with class method in instance!"
+assert example_instance.static_method() == (1, 2, 3), "Instance composition fails with class method in instance!"
+assert not hasattr(ExampleClass, "new_static_function"), "Instance composition fails due to class has changed!"
+assert not hasattr(ExampleClass, "new_class_function"), "Instance composition fails due to class has changed!"
+assert not hasattr(ExampleClass, "new_method"), "Instance composition fails due to class has changed!"

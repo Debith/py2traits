@@ -25,7 +25,7 @@ class InstanceTarget(object):
     def add_traits(self, traits):
         for trait in traits:
             trait.for_instance(self._instance)
-
+            
 
 if __name__ == "__main__":
     import doctest

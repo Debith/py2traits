@@ -2,30 +2,50 @@
 # -*- coding: utf-8 -*-
 from pytraits import extendable
 
-# Let's start by creating a super simple class without any methods. Ok, we do add
-# constructor there, but that is just for showing that our composition will really
-# work.
+
+# Let's start by creating a simple class with some values. It contains
+# class variables and instance variables. Composed methods will have
+# access to all these variables.
 @extendable
 class ExampleClass(object):
+    PUBLIC = 24
+    _HIDDEN = 25
+    __PRIVATE = 26
+
     def __init__(self):
-        self._value = 42
+        self.public = 42
+        self._hidden = 43
+        self.__private = 44
 
 
-# Then we create a class which contains single method that will be transferred 
-# as a part of the class above. Note that ExampleTrait requires target object
-# to contain attribute '_value', thus it won't work as a stand-alone object.
+# Then we create a class which contains different types of methods that will be
+# transferred as a part of the class above. Note that ExampleTrait requires target 
+# object to contain class variables and instance variables, thus it won't work as a 
+# stand-alone object.
 class ExampleTrait(object):
-    def trait_method(self):
-        return self._value
+    @staticmethod
+    def static_method():
+        return 1, 2, 3
+
+    @classmethod
+    def class_method(cls):
+        return cls.PUBLIC, cls._HIDDEN, cls.__PRIVATE
+
+    def instance_method(self):
+        return self.public, self._hidden, self.__private
 
 
-# Then, here we do the actual composition, where we cherry-pick 'trait_method' from
-# ExampleTrait and add it into ExampleClass.
-ExampleClass.add_traits(ExampleTrait.trait_method)
+# Then, here we do the actual composition, where we cherry-pick each method from
+# ExampleTrait and compose them into ExampleClass.
+ExampleClass.add_traits(ExampleTrait.instance_method, 
+                        ExampleTrait.class_method,
+                        ExampleTrait.static_method)
 
 
-# Here are the proofs that new method works as part of new class. Also we show
+# Here are the proofs that composed methods work as part of new class. Also we show
 # that there is no inheritance done for ExampleClass.
-assert hasattr(ExampleClass, 'trait_method'), "Failed to cherry-pick method to class!"
 assert ExampleClass.__bases__ == (object, ), "Inheritance has occurred!"
-assert ExampleClass().trait_method() == 42, "Cherry-picked method not working properly in new class!"
+assert ExampleClass.static_method() == (1, 2, 3), "Class composition fails with classmethod in class!"
+assert ExampleClass.class_method() == (24, 25, 26), "Class composition fails with class method in class!"
+assert ExampleClass().class_method() == (24, 25, 26), "Class composition fails with class method in instance!"
+assert ExampleClass().instance_method() == (42, 43, 44), "Class composition fails with instance method!"

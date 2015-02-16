@@ -45,41 +45,16 @@ Features
       - [X] as classmethods
       - [X] as staticmethods
     - [X] Properties
+ - Supported trait access level
+      - [X] Private class attributes
+      - [X] Hidden class attributes
+      - [X] Public class attributes
+      - [X] Private instance attributes
+      - [X] Hidden instance attributes
+      - [X] Public instance attributes
  - [X] Singleton
  - [X] NestedDict
- - Examples
-    - [X] Class
-       - [X] Unbound method in Python 2.x
-       - [X] Bound method in Python 2.x
-       - [X] Method in Python 3.x
-       - [X] Property as part of class
-       - [ ] Property cherry-picking
-       - [X] Function
-         - [X] Instance method         
-         - [X] Class method
-         - [X] Static method
-       - [ ] Conflicts
-          - [ ] symmetric sum
-          - [ ] override
-          - [ ] alias
-          - [ ] exclude
-       - [X] Multiple traits
-    - [X] Instance
-       - [X] Unbound method in Python 2.x
-       - [X] Bound method in Python 2.x
-       - [X] Method in Python 3.x
-       - [X] Property as part of class
-       - [ ] Property cherry-picking
-       - [X] Function
-         - [X] Instance method         
-         - [X] Class method
-         - [X] Static method
-       - [ ] Conflicts
-          - [ ] symmetric sum
-          - [ ] override
-          - [ ] alias
-          - [ ] exclude
-       - [X] Multiple traits
+
 
 Composition of Traits
 ---------------------
@@ -101,29 +76,12 @@ composing them to target objects. If anything, it at least enables possibility f
 creative ways to reuse your code.
 
 
-Supported Trait Targets
------------------------
-
-TBD
-
-Supported Trait Types
----------------------
-
-TBD
-
-NestedDict - Dictionary for deep nested hierarchies
----------------------------------------------------
-
-TBD
-
-Singleton - Glorified global variable
--------------------------------------
-
-TBD
-
-
 History
 =======
+
+0.8 Adding support to private class and instance attributes
+  - Redone function binding to include recompilation of the function
+  - Leaving Python 2.x into unsupported state temporarily.
 
 0.7 Improving usability of the library
   - Introduced new extendable decorator, which adds function to add traits to object

@@ -4,47 +4,50 @@ from pytraits import extendable
 
 
 # Let's start by creating a simple class with some values. It contains
-# one class variable and one private member. Composed methods will have
+# class variables and instance variables. Composed methods will have
 # access to all these variables.
 @extendable
 class ExampleClass(object):
-    VALUE = 24
+    PUBLIC = 24
+    _HIDDEN = 25
+    __PRIVATE = 26
 
     def __init__(self):
-        self._value = 42
+        self.public = 42
+        self._hidden = 43
+        self.__private = 44
 
 
-# Then we create class, which will act as a Trait. It relies target class to
-# contain some state in order to work. This example shows that each type of
-# method can be composed to target class and that they will work as if they
-# were written there in the first place.
+# Then we create a class which contains different types of methods that will be
+# transferred as a part of the class above. Note that ExampleTrait requires target 
+# object to contain class variables and instance variables, thus it won't work as a 
+# stand-alone object.
 class ExampleTrait(object):
-    @classmethod
-    def class_method(cls):
-        return cls.VALUE
-
     @staticmethod
     def static_method():
-        return 42
+        return 1, 2, 3
+
+    @classmethod
+    def class_method(cls):
+        return cls.PUBLIC, cls._HIDDEN, cls.__PRIVATE
 
     def instance_method(self):
-        return self._value
+        return self.public, self._hidden, self.__private
 
     @property
     def value(self):
-        return self._value
+        return self.public, self._hidden, self.__private
 
 
-# Here we compose whole ExampleTrait into ExampleClass, which will result
-# Example class to contain all ExampleTrait classes method, in this case
-# just instance_method.
+# Compose new methods and property from ExampleTrait into ExampleClass.
 ExampleClass.add_traits(ExampleTrait)
 
 
-# Here are the proofs that new method works as part of new class. Also we show
+# Here are the proofs that composed methods work as part of new class. Also we show
 # that there is no inheritance done for ExampleClass.
 assert ExampleClass.__bases__ == (object, ), "Inheritance has occurred!"
-assert ExampleClass.static_method() == 42, "Class composition fails with static method!"
-assert ExampleClass.class_method() == 24, "Class composition fails with class method!"
-assert ExampleClass().instance_method() == 42, "Class composition fails with instance method!"
-assert ExampleClass().value == 42, "Class composition fails with property!"
+assert ExampleClass.static_method() == (1, 2, 3), "Class composition fails with static method!"
+assert ExampleClass.class_method() == (24, 25, 26), "Class composition fails with class method!"
+assert ExampleClass().class_method() == (24, 25, 26), "Class composition fails with class method in instance!"
+assert ExampleClass().instance_method() == (42, 43, 44), "Class composition fails with instance method!"
+assert ExampleClass().value == (42, 43, 44), "Class composition fails with property!"

@@ -16,13 +16,17 @@
    limitations under the License.
 '''
 
+from pytraits.sources.routine import RoutineSource
+
 class PropertySource:
     def __init__(self, prop, name):
         self._property = prop
         self._name = name
 
     def for_class(self, clazz):
-        setattr(clazz, self._name, self._property)
+        getter = RoutineSource(self._property.fget)
+        getter.for_class(clazz)
+        setattr(clazz, self._name, property(getattr(clazz, self._property.fget.__name__)))
 
     def for_instance(self, instance):
         setattr(instance.__class__, self._name, self._property)        

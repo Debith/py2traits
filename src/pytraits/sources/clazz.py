@@ -19,9 +19,7 @@
 import sys
 import inspect
 
-from pytraits.sources.function import FunctionSource
-from pytraits.sources.method import *
-from pytraits.sources.decorated import DecoratedFunctionSource 
+from pytraits.sources.routine import RoutineSource
 from pytraits.sources.prop import PropertySource
 
 
@@ -43,19 +41,13 @@ class ClassSource(object):
                 continue # Ignore more builtin stuff
 
             if item.kind == "class method":
-                yield DecoratedFunctionSource(item.object)
+                yield RoutineSource(item.object.__func__)
             elif item.kind == "static method":
-                yield DecoratedFunctionSource(item.object)
+                yield RoutineSource(item.object.__func__)
             elif item.kind == "data":
                 pass # no support yet
             elif item.kind == "method":
-                if sys.version_info.major == 3:
-                    yield MethodSource(item.object)
-                else:
-                    if item.object.__self__:
-                        yield BoundMethodSource(item.object)
-                    else:
-                        yield UnboundMethodSource(item.object)
+                yield RoutineSource(item.object)
             elif item.kind == "property":
                 yield PropertySource(item.object, item.name)
             else:
