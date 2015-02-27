@@ -79,6 +79,9 @@ creative ways to reuse your code.
 History
 =======
 
+0.9 Bringing back compatibility to Python 2.x
+  - Some small clean up too
+
 0.8 Adding support to private class and instance attributes
   - Redone function binding to include recompilation of the function
   - Leaving Python 2.x into unsupported state temporarily.

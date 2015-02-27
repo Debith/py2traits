@@ -16,6 +16,7 @@
    limitations under the License.
 '''
 
+import sys
 import types
 import inspect
 import collections
@@ -26,7 +27,8 @@ __all__ = ['RoutineSource']
 def clone_function(function):
     trait = collections.OrderedDict()
     trait["co_argcount"] = function.__code__.co_argcount
-    trait["co_kwonlyargcount"] = function.__code__.co_kwonlyargcount
+    if sys.version_info[0] == 3:
+        trait["co_kwonlyargcount"] = function.__code__.co_kwonlyargcount
     trait["co_nlocals"] = function.__code__.co_nlocals
     trait["co_stacksize"] = function.__code__.co_stacksize
     trait["co_flags"] = function.__code__.co_flags
@@ -55,7 +57,14 @@ def compile_trait(trait, globs):
     return types.FunctionType(types.CodeType(*trait.values()), globs)
 
 
-class RoutineSource:
+def recompile(function, target, name):
+    trait = clone_function(function)
+    transfer_names(trait, target)
+    trait["co_name"] = name or trait["co_name"]
+    return compile_trait(trait, function.__globals__)    
+
+
+class RoutineSource(object):
     """
     Identifies given routines
 
@@ -90,6 +99,8 @@ class RoutineSource:
 
     >>> RoutineSource(instance.method).__class__.__name__
     'BoundFunctionSource'
+
+    >>> type(Example.static_method)
     """
     def __new__(self, routine, name=None):
         try:
@@ -109,20 +120,10 @@ class RoutineSource:
             elif first_arg == 'cls':
                 return ClassMethodSource(routine, name)
             else: # static
-                return DecoratedRoutineSource(routine, name)
-
-
-def recompile(function, target, name):
-    trait = clone_function(function)
-    transfer_names(trait, target)
-    trait["co_name"] = name or trait["co_name"]
-    return compile_trait(trait, function.__globals__)    
+                return StaticMethodSource(routine, name)
 
 
 class BoundFunctionSource:
-    """
-    Encapsulate Python module level function into a class.
-    """
     def __init__(self, function, name = None):
         self._function = function
         self._name = name or function.__name__
@@ -138,9 +139,6 @@ class BoundFunctionSource:
 
 
 class ClassMethodSource:
-    """
-    Encapsulate Python module level function into a class.
-    """
     def __init__(self, function, name = None):
         self._function = function
         self._name = name or function.__name__
@@ -156,9 +154,6 @@ class ClassMethodSource:
 
 
 class UnboundFunctionSource:
-    """
-    Encapsulate Python module level function into a class.
-    """
     def __init__(self, function, name = None):
         self._function = function
         self._name = name or function.__name__
@@ -172,13 +167,18 @@ class UnboundFunctionSource:
         instance.__dict__[self._name] = bound_method
 
 
-class DecoratedRoutineSource:
+class StaticMethodSource:
     def __init__(self, function, name = None):
         self._function = function
         self._name = name or self._function.__name__
 
-    def for_class(self, clazz):
-        setattr(clazz, self._name, recompile(self._function, clazz, self._name))
+    if sys.version_info[0] == 3:
+        def for_class(self, clazz):
+            setattr(clazz, self._name, recompile(self._function, clazz, self._name))
+    else:
+        def for_class(self, clazz):
+            new_method = recompile(self._function, clazz, self._name)
+            setattr(clazz, self._name, staticmethod(new_method))
 
     def for_instance(self, instance):
         method = recompile(self._function, instance.__class__, self._name)    
